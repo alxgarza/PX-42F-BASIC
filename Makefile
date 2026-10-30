@@ -25,7 +25,7 @@ CFLAGS := $(ARCH) -std=c11 -Os -Wall -Wextra -ffunction-sections -fdata-sections
 LDFLAGS := $(ARCH) -T px42f/app.ld -nostartfiles --specs=nano.specs --specs=nosys.specs \
            -Wl,--gc-sections -Wl,--orphan-handling=error -Wl,--no-warn-rwx-segments -Wl,-Map=build/$(NAME).map
 
-.PHONY: all sim test install clean
+.PHONY: all sim live test install clean
 
 all: build/$(NAME).bin
 
@@ -49,6 +49,11 @@ sim: build/sim
 	rm -rf build/sim-out build/sim-drive
 	mkdir -p build/sim-drive && cp -R sim/drive/. build/sim-drive/
 	build/sim build/sim-out build/sim-drive $(SIM_SCRIPT)
+
+# The live simulator: the same build, in a web page with keys you can press.
+# Its Restart button rebuilds the app and starts it again.
+live: build/sim
+	python3 sim/live.py build/sim sim/drive build/sim-drive "$(MAKE) build/sim"
 
 # The language, on the computer (tests/test_basic.c).
 test: | build
