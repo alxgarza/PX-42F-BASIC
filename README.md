@@ -45,7 +45,7 @@ The keys type in two modes, shown at the top right of the screen:
 |---|---|
 | SHIFT ENTER | ALPHA (printed below ENTER): switches between ALPHA and NUM |
 | SHIFT | with any other key: types the other mode's character, once |
-| ▲ ▼ | on an empty line: the program editor. The list: ▲ ▼ move the highlight (SHIFT: a screenful), ENTER edits the line where it is (the header says EDIT), EXIT leaves. Editing: ▲ ▼ move the cursor, ENTER accepts, EXIT discards; either way you're back at the list. On a line with text at the prompt: ▲ ▼ move the cursor. |
+| ▲ ▼ | on an empty line: the program editor; with no program, the history (▲ older, ▼ newer), as the terminal's arrows. The list: ▲ ▼ move the highlight (SHIFT: a screenful), ENTER edits the line where it is (the header says EDIT), EXIT leaves. Editing: ▲ ▼ move the cursor, ENTER accepts, EXIT discards; either way you're back at the list. On a line with text at the prompt: ▲ ▼ move the cursor. |
 | SHIFT ▲ | the history: the last line typed at the prompt; again, the one before (the last 8) |
 | SHIFT ▼ | the keyword map (above): press a key to type its keyword. ▼ again shows the functions; ▼ once more, or a key with no keyword, goes back. |
 | ← | deletes the character before the cursor; SHIFT ← the whole line |

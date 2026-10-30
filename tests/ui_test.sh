@@ -96,6 +96,16 @@ saved '10 PRINT 3'
 run "AUTOSAVE after NEW" serial:10_PRINT_4 100 serial:NEW 100 ON ENTER 100
 if [ -s "$TMP/drive/BIN/APPS/BASIC/AUTOSAVE.BAS" ]; then echo "FAIL $name: AUTOSAVE.BAS still has the old program"; failures=$((failures + 1)); fi
 
+# ▲ ▼ with no program: the history
+run "no program: ▲ ▲ is the line before last" serial:PRINT_5 100 serial:PRINT_6 100 UP UP ENTER 100 QUIT
+[ "$(printf '%s\n' "$out" | grep -cx 5)" = 2 ] || { echo "FAIL $name"; echo "$out" | sed 's/^/    /'; failures=$((failures + 1)); }
+
+run "no program: ▲ ▲ ▼ is the last line" serial:PRINT_5 100 serial:PRINT_6 100 UP UP DOWN ENTER 100 QUIT
+[ "$(printf '%s\n' "$out" | grep -cx 6)" = 2 ] || { echo "FAIL $name"; echo "$out" | sed 's/^/    /'; failures=$((failures + 1)); }
+
+run "no program: a changed line, ▲ moves in it" 100 serial:PRINT_5 100 UP R5C0 ENTER R5C3 UP UP R5C2 ENTER 100 QUIT
+has '253'
+
 # The terminal
 run "up arrow brings the last line back" serial:PRINT_1 100 serial:PRINT_2 100 $'serial:\x1b[A' 100 QUIT
 has '2'

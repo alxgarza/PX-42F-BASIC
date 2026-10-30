@@ -488,6 +488,17 @@ static void recall(line_t *l, bool in_program, int older) {
     set_text(l, history[(history_newest - to + HISTORY) % HISTORY]);
 }
 
+/* The line is empty, or a line from the history not yet changed: what
+ * ▲ ▼ step through when there's no program for them to edit. */
+static bool browsing_history(const line_t *l) {
+    if (l->len == 0)
+        return true;
+    if (l->recalled < 0)
+        return false;
+    const char *h = history[(history_newest - l->recalled + HISTORY) % HISTORY];
+    return (int) strlen(h) == l->len && memcmp(h, l->buf, (size_t) l->len) == 0;
+}
+
 static void remember(const char *line) {
     if (line[0] == 0 || (history_count > 0 && strcmp(history[history_newest], line) == 0))
         return;
@@ -550,6 +561,8 @@ static int key_typed(line_t *l, int k, bool in_program) {
                 if (kw != NULL)
                     insert_text(l, kw);
             }
+        } else if (!in_program && basic_line_after(0) == 0 && browsing_history(l)) { /* no program: ▲ ▼ the history, as the terminal's arrows */
+            recall(l, in_program, up ? +1 : -1);
         } else if (l->len > 0) { /* a line to edit: the arrows move in it */
             move_to(l, l->pos + (up ? -1 : +1));
         } else if (!in_program) { /* an empty line: the program editor */

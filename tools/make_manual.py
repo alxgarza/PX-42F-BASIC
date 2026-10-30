@@ -235,7 +235,7 @@ KEYS_NUM
 <tbody>
 <tr><td><kbd>SHIFT</kbd> <kbd>ENTER</kbd></td><td>ALPHA, as printed below <kbd>ENTER</kbd>: switches between ALPHA and NUM.</td></tr>
 <tr><td><kbd>SHIFT</kbd></td><td>With any other key, types from the other mode once: <kbd>SHIFT</kbd> <kbd>7</kbd> types 7 in ALPHA, <kbd>SHIFT</kbd> <kbd>&Sigma;+</kbd> types A in NUM.</td></tr>
-<tr><td><kbd>&#9650;</kbd> <kbd>&#9660;</kbd></td><td>On an empty line: open the program editor (<a href="#editing">section 4</a>). On a line with text, or while editing a line: move the cursor left and right.</td></tr>
+<tr><td><kbd>&#9650;</kbd> <kbd>&#9660;</kbd></td><td>On an empty line: open the program editor (<a href="#editing">section 4</a>). With no program, the history instead: <kbd>&#9650;</kbd> the line typed before, again the one before that; <kbd>&#9660;</kbd> back toward the newest. On a line with text, or while editing a line: move the cursor left and right.</td></tr>
 <tr><td><kbd>SHIFT</kbd> <kbd>&#9650;</kbd></td><td>The history: the last line typed at the prompt, in place of the one being typed, to run it again. Again: the one before, back through the last 8.</td></tr>
 <tr><td><kbd>SHIFT</kbd> <kbd>&#9660;</kbd></td><td>The keyword map (below).</td></tr>
 <tr><td><kbd>&larr;</kbd></td><td>Deletes the last character. <kbd>SHIFT</kbd> <kbd>&larr;</kbd> deletes the whole line.</td></tr>
@@ -317,7 +317,7 @@ KEYWORD_PAGES_TABLE
   <li><strong>Deleting a line:</strong> edit it down to just its number and press <kbd>ENTER</kbd>. The line is removed, and the highlight moves to its neighbour.</li>
   <li><strong>A line with no number</strong> (the number edited away) is dropped as if discarded: it would run as a command, which isn't what you meant.</li>
 </ul>
-<p>The history is on <kbd>SHIFT</kbd> <kbd>&#9650;</kbd>: it brings back the last command typed, for running it again. At a program's <code>INPUT</code>, <kbd>&#9650;</kbd> and <kbd>&#9660;</kbd> only move in what you've typed.</p>
+<p>The history is on <kbd>SHIFT</kbd> <kbd>&#9650;</kbd>: it brings back the last command typed, for running it again. With no program in memory, plain <kbd>&#9650;</kbd> and <kbd>&#9660;</kbd> step through it too, as the terminal&rsquo;s arrows do. At a program's <code>INPUT</code>, <kbd>&#9650;</kbd> and <kbd>&#9660;</kbd> only move in what you've typed.</p>
 <div class="shots">
 <figure>IMG:b/input.png|A program asking for a radius and printing the area|<figcaption>A program with <code>INPUT</code>. <code>^</code> shows as &uarr;, the HP-42S's own character.</figcaption></figure>
 <figure>IMG:b/list.png|R/S stops the program; LIST shows it|<figcaption><kbd>R/S</kbd> stopped it (<code>BREAK IN 10</code>); <code>LIST</code> shows it.</figcaption></figure>
@@ -574,7 +574,7 @@ KEYS_CODES
 <tr><th>The calculator</th><td><code>CLS AT PSET LINE BOX TONE PLAYMIDI STOPMIDI PLAYWAV STOPWAV WAIT DEG RAD DIGITS</code></td></tr>
 <tr><th>Functions</th><td><code>SIN COS TAN ASN ACS ATN SQR EXP LOG LOG10 ABS SGN INT RND PI KEY MIDI SIZE LEN ASC VAL INSTR LEFT$ RIGHT$ MID$ CHR$ STR$ INKEY$</code></td></tr>
 <tr><th>Operators</th><td><code>^ * / MOD + - = &lt;&gt; &lt; &gt; &lt;= &gt;= NOT AND OR</code></td></tr>
-<tr><th>Keys</th><td><kbd>SHIFT</kbd> <kbd>ENTER</kbd> ALPHA/NUM &middot; <kbd>SHIFT</kbd> other mode once &middot; <kbd>&#9650;</kbd> <kbd>&#9660;</kbd> program editor, or move in a line &middot; <kbd>SHIFT</kbd> <kbd>&#9650;</kbd> history &middot; <kbd>SHIFT</kbd> <kbd>&#9660;</kbd> keywords &middot; <kbd>&larr;</kbd> delete &middot; <kbd>R/S</kbd> stop &middot; <kbd>SHIFT</kbd> <kbd>R/S</kbd> RUN &middot; <kbd>ON</kbd> stop, or leave (asks)</td></tr>
+<tr><th>Keys</th><td><kbd>SHIFT</kbd> <kbd>ENTER</kbd> ALPHA/NUM &middot; <kbd>SHIFT</kbd> other mode once &middot; <kbd>&#9650;</kbd> <kbd>&#9660;</kbd> program editor (no program: history), or move in a line &middot; <kbd>SHIFT</kbd> <kbd>&#9650;</kbd> history &middot; <kbd>SHIFT</kbd> <kbd>&#9660;</kbd> keywords &middot; <kbd>&larr;</kbd> delete &middot; <kbd>R/S</kbd> stop &middot; <kbd>SHIFT</kbd> <kbd>R/S</kbd> RUN &middot; <kbd>ON</kbd> stop, or leave (asks)</td></tr>
 </tbody>
 </table></div>
 
