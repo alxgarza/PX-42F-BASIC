@@ -823,6 +823,9 @@ static void clear_run_state(void) {
     for_count = 0;
 }
 
+#define NO_PEN (-1)
+static int32_t pen_t, pen_c; /* PEN's: what the shapes leave out. Until a PEN, each has its own t. */
+
 static void clear_vars(void) {
     for (int i = 0; i < 26; i++) {
         vars[i] = num_int(0);
@@ -833,6 +836,8 @@ static void clear_vars(void) {
         svar[i].len = 0;
     pool_used = 0;
     sd_used = 0;
+    pen_t = NO_PEN;
+    pen_c = 1;
     dim_used = 0;
     for (int i = 0; i < BASIC_ARRAY_MAX; i++)
         array[i] = vars[0];
@@ -1357,6 +1362,48 @@ static int numbers(int32_t *v, int need, int max) {
     return got;
 }
 
+/* A shape's n numbers, then c and t if given: the pen's if not. */
+static void shape_numbers(int32_t *v, int n, int own_t) {
+    v[n] = pen_c;
+    v[n + 1] = pen_t == NO_PEN ? own_t : pen_t;
+    numbers(v, n, n + 2);
+    if (v[n + 1] < 0)
+        fail(E_HOW);
+}
+
+/* One of POLYGON's lists of n numbers, by its letter, after a comma. */
+static const num_t *corner_list(int n) {
+    expect(',');
+    if (!at_letter())
+        fail(E_WHAT);
+    int a = *pc++ - 'A';
+    if (narr[a].nd != 1 || n > narr[a].d1)
+        fail(E_HOW);
+    return &dim_pool[narr[a].at];
+}
+
+static int16_t corner(num_t v) {
+    int32_t i = to_int(v);
+    return (int16_t) (i < -32768 ? -32768 : i > 32767 ? 32767 : i);
+}
+
+/* POLYGON n, X, Y, c, t: n corners, from X(0), Y(0) on. */
+static void st_polygon(void) {
+    int32_t n = int_expr();
+    if (n < 1 || n > PX_POLY_MAX)
+        fail(E_HOW);
+    const num_t *xs = corner_list((int) n), *ys = corner_list((int) n);
+    int32_t v[2] = {pen_c, pen_t == NO_PEN ? 0 : pen_t};
+    if (is_char(','))
+        numbers(v, 1, 2);
+    if (v[1] < 0)
+        fail(E_HOW);
+    px_point_t points[PX_POLY_MAX];
+    for (int i = 0; i < n; i++)
+        points[i] = (px_point_t) {corner(xs[i]), corner(ys[i])};
+    bio_polygon(points, (int) n, (int) v[1], v[0] != 0);
+}
+
 static void statement(void) {
     skip();
     if (pc >= end || *pc == ':')
@@ -1413,18 +1460,35 @@ static void statement(void) {
         int32_t v[2];
         numbers(v, 2, 2);
         bio_at((int) v[0], (int) v[1]);
+    } else if (is_word("PEN")) {
+        int32_t v[2] = {0, 1};
+        numbers(v, 1, 2);
+        if (v[0] < 0)
+            fail(E_HOW);
+        pen_t = v[0];
+        pen_c = v[1] != 0;
     } else if (is_word("PSET")) {
-        int32_t v[3] = {0, 0, 1};
+        int32_t v[3] = {0, 0, pen_c};
         numbers(v, 2, 3);
         bio_pset((int) v[0], (int) v[1], v[2] != 0);
     } else if (is_word("LINE")) {
-        int32_t v[5] = {0, 0, 0, 0, 1};
-        numbers(v, 4, 5);
-        bio_line((int) v[0], (int) v[1], (int) v[2], (int) v[3], v[4] != 0);
+        int32_t v[6];
+        shape_numbers(v, 4, 1);
+        bio_line((int) v[0], (int) v[1], (int) v[2], (int) v[3], (int) v[5], v[4] != 0);
     } else if (is_word("BOX")) {
-        int32_t v[5] = {0, 0, 0, 0, 1};
-        numbers(v, 4, 5);
-        bio_box((int) v[0], (int) v[1], (int) v[2], (int) v[3], v[4] != 0);
+        int32_t v[6];
+        shape_numbers(v, 4, 0);
+        bio_box((int) v[0], (int) v[1], (int) v[2], (int) v[3], (int) v[5], v[4] != 0);
+    } else if (is_word("CIRCLE")) {
+        int32_t v[5];
+        shape_numbers(v, 3, 0);
+        bio_ellipse((int) v[0], (int) v[1], (int) v[2], (int) v[2], (int) v[4], v[3] != 0);
+    } else if (is_word("ELLIPSE")) {
+        int32_t v[6];
+        shape_numbers(v, 4, 0);
+        bio_ellipse((int) v[0], (int) v[1], (int) v[2], (int) v[3], (int) v[5], v[4] != 0);
+    } else if (is_word("POLYGON")) {
+        st_polygon();
     } else if (is_word("TONE")) {
         int32_t t = int_expr();
         if (t < 0 || t > 10)

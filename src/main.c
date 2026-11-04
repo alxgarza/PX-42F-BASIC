@@ -60,13 +60,23 @@ void bio_pset(int x, int y, int black) {
     console_drawn();
 }
 
-void bio_line(int x0, int y0, int x1, int y1, int black) {
-    px->line(x0, y0, x1, y1, black);
+void bio_line(int x0, int y0, int x1, int y1, int t, int black) {
+    px->thick_line(x0, y0, x1, y1, t, black);
     console_drawn();
 }
 
-void bio_box(int x, int y, int w, int h, int black) {
-    px->fill(x, y, w, h, black);
+void bio_box(int x, int y, int w, int h, int t, int black) {
+    px->box(x, y, w, h, t, black);
+    console_drawn();
+}
+
+void bio_ellipse(int x, int y, int rx, int ry, int t, int black) {
+    px->ellipse(x, y, rx, ry, t, black);
+    console_drawn();
+}
+
+void bio_polygon(const px_point_t *points, int n, int t, int black) {
+    px->polygon(points, n, t, black);
     console_drawn();
 }
 

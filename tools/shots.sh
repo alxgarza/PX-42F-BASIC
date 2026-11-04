@@ -24,6 +24,7 @@ build/sim "$S/b" build/sim-drive serial:CLS serial:PRINT_1/0 serial:PRIMT_1 seri
   serial:NEW serial:CLS 'serial:10_INPUT_"RADIUS",R' 'serial:20_PRINT_"AREA_";PI*R^2' serial:30_GOTO_10 serial:RUN serial:2 serial:10 100 shot:input \
   RS 100 serial:LIST 100 shot:list ON >/dev/null
 fresh
-build/sim "$S/c" build/sim-drive serial:CLS 'serial:LOAD_"PRIMES"' serial:RUN 300 shot:primes serial:CLS 'serial:LOAD_"HELLO"' serial:RUN 300 shot:hello ON >/dev/null
+build/sim "$S/c" build/sim-drive serial:CLS 'serial:LOAD_"PRIMES"' serial:RUN 300 shot:primes serial:CLS 'serial:LOAD_"HELLO"' serial:RUN 300 shot:hello \
+  'serial:LOAD_"CATCHER"' serial:RUN 1500 shot:catcher-title ENTER 2500 R4C1 400 R4C3 400 R4C3 400 R4C1 1200 shot:catcher RS ON >/dev/null
 magick "$S/a/kw1.png" -scale 200% "$P/docs-keywords.png"
 python3 "$P/tools/make_manual.py"

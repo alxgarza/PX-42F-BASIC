@@ -19,7 +19,7 @@ It's built on the PX-42F App Template. The framework's files, `px42f/` and
 ## Install
 
 1. Build it with `make`, or the VS Code Build task. It needs the PX-42F-Plus
-   firmware with app API version 3.
+   firmware with app API version 5.
 2. Copy it to the calculator: Settings → USB Drive → Connect to Computer, then
    `make install`. That puts `BASIC.bin` in `BIN/APPS`.
 3. Optionally, copy the examples from `sim/drive/BIN/APPS/BASIC/` to
@@ -45,7 +45,7 @@ The keys type in two modes, shown at the top right of the screen:
 |---|---|
 | SHIFT ENTER | ALPHA (printed below ENTER): switches between ALPHA and NUM |
 | SHIFT | with any other key: types the other mode's character, once |
-| ▲ ▼ | on an empty line: the program editor; with no program, the history (▲ older, ▼ newer), as the terminal's arrows. The list: ▲ ▼ move the highlight (SHIFT: a screenful), ENTER edits the line where it is (the header says EDIT), EXIT leaves. Editing: ▲ ▼ move the cursor, ENTER accepts, EXIT discards; either way you're back at the list. On a line with text at the prompt: ▲ ▼ move the cursor. |
+| ▲ ▼ | on an empty line: the program editor; with no program, the history (▲ older, ▼ newer), as the terminal's arrows. The list: ▲ ▼ move the highlight (SHIFT: a screenful), ENTER edits the line where it is (the header says EDIT), EXIT leaves. Editing: ▲ ▼ move the cursor, ENTER accepts, EXIT discards; either way you're back at the list. On a line with text at the prompt: ▲ ▼ move the cursor; ▼ at the end of the line completes the keyword being typed, like TAB on the terminal. |
 | SHIFT ▲ | the history: the last line typed at the prompt; again, the one before (the last 8) |
 | SHIFT ▼ | the keyword map (above): press a key to type its keyword. ▼ again shows the functions; ▼ once more, or a key with no keyword, goes back. |
 | ← | deletes the character before the cursor; SHIFT ← the whole line |
@@ -60,6 +60,9 @@ whole program. Everything shown on the screen also goes to the terminal.
 Ctrl-C stops a program, or clears the line at the prompt. The arrow keys, Home,
 End and Delete work as in any shell: ← → move in the line, ↑ ↓ step through the
 history (Ctrl-A, Ctrl-E, Ctrl-B, Ctrl-F, Ctrl-P, Ctrl-N and Ctrl-U do the same).
+TAB completes the keyword being typed: `PR` TAB gives `PRINT `. When several
+words fit, it goes as far as they agree (`STO` → `STOP`); when that adds
+nothing, it lists them. A TAB inside a pasted program is a space.
 If the terminal never sends them, switch it to raw mode (CoolTerm: Connection →
 Options → Terminal → Raw Mode).
 
@@ -118,8 +121,12 @@ index outside, an array not dimensioned or dimensioned twice is `HOW?`.
 | `CLS` | clears the screen |
 | `AT col, row` | moves the text cursor (0–30, 0–8) |
 | `PSET x, y, c` | a pixel: `c` 1 black (the default), 0 white |
-| `LINE x1, y1, x2, y2, c` | a line |
-| `BOX x, y, w, h, c` | a filled rectangle |
+| `LINE x1, y1, x2, y2, c, t` | a line, `t` pixels thick (1 if left out) |
+| `BOX x, y, w, h, c, t` | a rectangle: filled if `t` is 0 or left out, else an outline `t` pixels thick |
+| `CIRCLE x, y, r, c, t` | a circle around `(x, y)`: filled if `t` is 0 or left out, else an outline `t` pixels thick |
+| `ELLIPSE x, y, rx, ry, c, t` | the same, `rx` across and `ry` up and down from the centre |
+| `POLYGON n, X, Y, c, t` | the `n` corners (1 to 64) in the lists `X(0)`… and `Y(0)`…, closed for you: filled if `t` is 0 or left out, else an outline. Where it crosses itself, a filled one has holes. `HOW?` if a list isn't dimensioned or is too short |
+| `PEN t, c` | what the shapes above use when they leave out `t` or `c`: as Plus42's `PEN`, which takes the same two numbers. `c` left out is 1. `PSET` takes the colour. `RUN` and `NEW` forget it |
 | `TONE n` | the calculator's tone 0–9, or 10 (the error sound) |
 | `PLAYMIDI "name"` | plays the song `/MIDI/name.mid` on the calculator's synthesizer and goes on at once; the music plays while the program runs, and on after it ends |
 | `STOPMIDI` | stops the song |
@@ -128,6 +135,10 @@ index outside, an array not dimensioned or dimensioned twice is `HOW?`.
 | `WAIT ms` | pauses; R/S stops it |
 | `DEG`, `RAD` | angles in degrees or radians (the default). `RUN` starts in radians, so a program that wants degrees says `DEG` itself |
 | `DIGITS n` | significant digits `PRINT` shows (12 at `RUN`) |
+
+`c` and `t` are optional; to give `t`, give `c` first: `CIRCLE 125,61,40,1,1`. A
+box's, circle's or ellipse's outline grows inward, keeping its outer size; a line
+or a polygon's edge is centred, with round ends. A negative `t` is `HOW?`.
 
 The screen is 250 × 122 pixels, with `(0, 0)` at the top left. The text uses 9
 lines of 31 characters under the status bar.
@@ -175,12 +186,20 @@ In a program each message says where: `HOW? IN 120`.
 
 ## Examples
 
-`sim/drive/BIN/APPS/BASIC/` has five:
+`sim/drive/BIN/APPS/BASIC/` has eight:
 - `HELLO`: a first program;
 - `PRIMES`: the primes below 100;
 - `GUESS`: guess a number, with `INPUT` and `RND`;
 - `SPIRAL`: lines and trigonometry;
-- `SINE`: two curves plotted with `PSET`.
+- `SINE`: two curves plotted with `PSET`;
+- `SHAPES`: lines, boxes, circles, ellipses and polygons with `PEN`, page by page;
+- `JUKEBOX`: plays a MIDI song until a key is pressed;
+- `CATCHER`: a game: catch the falling stars in a basket (4 and 6 move it), dodge
+  the rocks. Graphics with `LINE`, `BOX`, `PSET` and `AT`; sound with `TONE` and
+  `PLAYWAV`, which goes on while the game runs.
+
+`sim/drive/SOUNDS/TONES` has the calculator's ten tones (from Free42), so
+`PLAYWAV "TONES/TONE3"` works in the simulator too.
 
 ## Building and testing
 

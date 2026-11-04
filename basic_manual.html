@@ -306,7 +306,7 @@ table.ref td:first-child { white-space: nowrap; }
 <tbody>
 <tr><td><kbd>SHIFT</kbd> <kbd>ENTER</kbd></td><td>ALPHA, as printed below <kbd>ENTER</kbd>: switches between ALPHA and NUM.</td></tr>
 <tr><td><kbd>SHIFT</kbd></td><td>With any other key, types from the other mode once: <kbd>SHIFT</kbd> <kbd>7</kbd> types 7 in ALPHA, <kbd>SHIFT</kbd> <kbd>&Sigma;+</kbd> types A in NUM.</td></tr>
-<tr><td><kbd>&#9650;</kbd> <kbd>&#9660;</kbd></td><td>On an empty line: open the program editor (<a href="#editing">section 4</a>). With no program, the history instead: <kbd>&#9650;</kbd> the line typed before, again the one before that; <kbd>&#9660;</kbd> back toward the newest. On a line with text, or while editing a line: move the cursor left and right.</td></tr>
+<tr><td><kbd>&#9650;</kbd> <kbd>&#9660;</kbd></td><td>On an empty line: open the program editor (<a href="#editing">section 4</a>). With no program, the history instead: <kbd>&#9650;</kbd> the line typed before, again the one before that; <kbd>&#9660;</kbd> back toward the newest. On a line with text, or while editing a line: move the cursor left and right. <kbd>&#9660;</kbd> at the end of the line completes the keyword being typed, like <kbd>TAB</kbd> on the terminal: <code>PR</code> becomes <code>PRINT&nbsp;</code>.</td></tr>
 <tr><td><kbd>SHIFT</kbd> <kbd>&#9650;</kbd></td><td>The history: the last line typed at the prompt, in place of the one being typed, to run it again. Again: the one before, back through the last 8.</td></tr>
 <tr><td><kbd>SHIFT</kbd> <kbd>&#9660;</kbd></td><td>The keyword map (below).</td></tr>
 <tr><td><kbd>&larr;</kbd></td><td>Deletes the last character. <kbd>SHIFT</kbd> <kbd>&larr;</kbd> deletes the whole line.</td></tr>
@@ -326,7 +326,7 @@ table.ref td:first-child { white-space: nowrap; }
 <tr><td>2. Functions</td><td><code>ABS(  ACS(  ASN(  ATN(  COS(  EXP(  INT(  LOG(  LOG10(  PI  RND(  SGN(  SIN(  SQR(  TAN(</code></td></tr>
 <tr><td>3. Strings</td><td><code>$  ASC(  CHR$(  INKEY$  INSTR(  LEFT$(  LEN(  MID$(  RIGHT$(  STR$(  VAL(</code></td></tr>
 <tr><td>4. Input / Output</td><td><code>?  AT  INKEY$  INPUT  KEY()  PRINT</code></td></tr>
-<tr><td>5. Graphics</td><td><code>BOX  CLS  LINE  PSET</code></td></tr>
+<tr><td>5. Graphics</td><td><code>BOX  CIRCLE  CLS  ELLIPSE  LINE  PEN  POLYGON  PSET</code></td></tr>
 <tr><td>6. Sound</td><td><code>MIDI()  PLAYMIDI  PLAYWAV  STOPMIDI  STOPWAV  TONE</code></td></tr>
 <tr><td>7. System</td><td><code>CMDS  DEG  DIGITS  ERASE  EXIT  FILES  HELP  LIST  LOAD  MEM  NEW  RAD  RUN  SAVE  SIZE  VER  WAIT</code></td></tr>
 <tr><td>8. Operators</td><td><code>@(  AND  MOD  NOT  OR</code></td></tr>
@@ -348,6 +348,7 @@ table.ref td:first-child { white-space: nowrap; }
   <li>Everything the screen shows also goes to the terminal, so a long listing can be read there.</li>
   <li><kbd>Ctrl-C</kbd> stops a running program, as <kbd>R/S</kbd> does; at the prompt it clears the line.</li>
   <li>The arrow keys work as you'd expect: <kbd>&larr;</kbd> <kbd>&rarr;</kbd> move in the line, <kbd>Home</kbd> and <kbd>End</kbd> go to its ends, <kbd>Delete</kbd> deletes under the cursor, <kbd>&uarr;</kbd> <kbd>&darr;</kbd> step through the history. <kbd>Ctrl-A</kbd> <kbd>Ctrl-E</kbd> <kbd>Ctrl-B</kbd> <kbd>Ctrl-F</kbd> <kbd>Ctrl-P</kbd> <kbd>Ctrl-N</kbd> and <kbd>Ctrl-U</kbd> do the same, for terminals that don't send the arrows.</li>
+  <li><kbd>TAB</kbd> completes the keyword being typed, as in a Linux shell: <code>PR</code> <kbd>TAB</kbd> gives <code>PRINT&nbsp;</code>, <code>SQ</code> <kbd>TAB</kbd> gives <code>SQR(</code>. When several words fit, it goes as far as they agree (<code>STO</code> becomes <code>STOP</code>); when that adds nothing, it lists them. Not inside quotes. A <kbd>TAB</kbd> inside a pasted program is a space.</li>
   <li>Editing the middle of a line redraws it with ANSI codes (carriage return, clear to the end of the line, cursor back): any ordinary terminal handles them. If CoolTerm shows odd characters or never sends the arrows or Ctrl-C, set it to <em>Raw Mode</em> (Connection &rarr; Options &rarr; Terminal), which sends each key at once.</li>
 </ul>
 
@@ -520,7 +521,7 @@ table.ref td:first-child { white-space: nowrap; }
 <tr><td><code>REM</code></td><td>A note: the rest of the line is ignored.</td><td><code>REM DRAW THE AXES</code></td></tr>
 <tr><td><code>DEG</code>, <code>RAD</code></td><td>Angles in degrees, or radians (the default). <code>RUN</code> starts in radians, so a program that wants degrees says <code>DEG</code> itself.</td><td><code>DEG:PRINT SIN(30)</code></td></tr>
 <tr><td><code>DIGITS</code></td><td>Digits PRINT shows, 1 to 34; 12 at first, and again at each <code>RUN</code>.</td><td><code>DIGITS 34</code></td></tr>
-<tr><td><code>CLS</code>, <code>AT</code>, <code>PSET</code>, <code>LINE</code>, <code>BOX</code>, <code>TONE</code>, <code>PLAYMIDI</code>, <code>STOPMIDI</code>, <code>PLAYWAV</code>, <code>STOPWAV</code>, <code>WAIT</code></td><td colspan="2">The screen, sound and time: <a href="#screen">section 8</a>.</td></tr>
+<tr><td><code>CLS</code>, <code>AT</code>, <code>PSET</code>, <code>LINE</code>, <code>BOX</code>, <code>CIRCLE</code>, <code>ELLIPSE</code>, <code>POLYGON</code>, <code>PEN</code>, <code>TONE</code>, <code>PLAYMIDI</code>, <code>STOPMIDI</code>, <code>PLAYWAV</code>, <code>STOPWAV</code>, <code>WAIT</code></td><td colspan="2">The screen, sound and time: <a href="#screen">section 8</a>.</td></tr>
 <tr><td><code>SAVE</code>, <code>LOAD</code>, <code>FILES</code>, <code>ERASE</code></td><td colspan="2">Files: <a href="#files">section 9</a>.</td></tr>
 <tr><td><code>VER</code></td><td>Shows the PX-BASIC version.</td><td><code>VER</code></td></tr>
 <tr><td><code>MEM</code></td><td>How much is left of the program space and of the string pool. (<code>SIZE</code> is the program space alone, as a number.)</td><td><code>MEM</code></td></tr>
@@ -545,10 +546,16 @@ table.ref td:first-child { white-space: nowrap; }
 <thead><tr><th>Statement</th><th>Draws</th></tr></thead>
 <tbody>
 <tr><td><code>PSET x,y</code> or <code>PSET x,y,c</code></td><td>one pixel</td></tr>
-<tr><td><code>LINE x1,y1,x2,y2</code> (<code>,c</code>)</td><td>a line</td></tr>
-<tr><td><code>BOX x,y,w,h</code> (<code>,c</code>)</td><td>a filled rectangle <code>w</code> wide, <code>h</code> high, from its top-left corner</td></tr>
+<tr><td><code>LINE x1,y1,x2,y2</code> (<code>,c,t</code>)</td><td>a line, <code>t</code> pixels thick (1 if left out)</td></tr>
+<tr><td><code>BOX x,y,w,h</code> (<code>,c,t</code>)</td><td>a rectangle <code>w</code> wide, <code>h</code> high, from its top-left corner</td></tr>
+<tr><td><code>CIRCLE x,y,r</code> (<code>,c,t</code>)</td><td>a circle around <code>x,y</code></td></tr>
+<tr><td><code>ELLIPSE x,y,rx,ry</code> (<code>,c,t</code>)</td><td>the same, <code>rx</code> across and <code>ry</code> up and down from the centre</td></tr>
+<tr><td><code>POLYGON n,X,Y</code> (<code>,c,t</code>)</td><td>the <code>n</code> corners (1 to 64) in the lists <code>X()</code> and <code>Y()</code>, closed for you; where it crosses itself, a filled one has holes. <code>DIM X(2),Y(2)</code> holds 3 corners.</td></tr>
+<tr><td colspan="2"><code>t</code> is the thickness: 0 or left out is filled (a line: 1), 1 one pixel, <code>n</code> <code>n</code> pixels. An outline grows inward, keeping the outer size; a line or a polygon's edge is centred, with round ends. To give <code>t</code>, give <code>c</code> first: <code>CIRCLE 125,61,40,1,1</code>.</td></tr>
+<tr><td><code>PEN t</code> or <code>PEN t,c</code></td><td>draws nothing: the shapes after it use this <code>t</code> and <code>c</code> when they leave those out, and <code>PSET</code> the colour. <code>PEN 2:CIRCLE 125,61,40</code> is an outline 2 pixels thick; <code>PEN 0,0</code> erases, filled. What a shape gives itself still counts. <code>RUN</code> and <code>NEW</code> forget it.</td></tr>
 </tbody>
 </table></div>
+<p>The shapes are the calculator's own, in its firmware, and Plus42 draws with the same ones: <code>PEN</code>, <code>BOX</code>, <code>ELLIPSE</code> and <code>POLYGON</code> there, with <code>DLINE</code> for <code>LINE</code>. Plus42 counts from 1,1, so a position there is one more than here, and its pen starts at 1, an outline. Here, until a <code>PEN</code>, a shape that leaves out <code>t</code> is filled.</p>
 <p>Drawing and text share the screen. While a program runs the status bar isn't redrawn, so the program can use the whole screen; it comes back at the prompt.</p>
 
 <h3>Sound and time</h3>
@@ -709,6 +716,164 @@ table.ref td:first-child { white-space: nowrap; }
 70 PSET X,61-40*COS(T)
 80 NEXT X
 90 WAIT 3000</code></pre>
+<h3>SHAPES</h3>
+<p>Each kind of shape, a page at a time, with <code>PEN</code>; a key goes on. Line 650 draws over the ball with a white pen.</p>
+<pre><code>10 REM SHAPES: WHAT THE CALCULATOR DRAWS. A KEY GOES ON
+20 REM PEN T,C SETS THE THICKNESS AND COLOUR OF WHAT FOLLOWS
+30 DEG:DIM X(5),Y(5)
+100 REM ----- THE WHOLE SCREEN -----
+110 CLS:PEN 1
+120 BOX 0,0,250,122:LINE 0,0,249,121:LINE 0,121,249,0
+130 GOSUB 900
+200 REM ----- A STAR OF LINES, THEN EACH THICKNESS -----
+210 CLS:PEN 1
+220 FOR A=0 TO 345 STEP 15
+230 LINE 69,61,INT(69.5+56*COS(A)),INT(61.5+56*SIN(A))
+240 NEXT A
+250 LINE 139,19,239,19
+260 PEN 2:LINE 139,39,239,39
+270 PEN 4:LINE 139,61,239,61
+280 PEN 8:LINE 139,83,239,83
+290 PEN 16:LINE 149,105,229,105
+295 GOSUB 900
+300 REM ----- BOXES: OUTLINES, FILLED, WHITE INSIDE -----
+310 CLS
+320 PEN 1:BOX 9,9,70,45
+330 PEN 2:BOX 89,9,70,45
+340 PEN 4:BOX 169,9,70,45
+350 PEN 0:BOX 9,64,110,50:BOX 129,64,110,50
+360 PEN 0,0:BOX 34,77,60,24
+370 PEN 3,0:BOX 141,72,86,34
+380 GOSUB 900
+400 REM ----- CIRCLES AND ELLIPSES -----
+410 CLS
+420 PEN 1:CIRCLE 41,31,28
+430 PEN 3:CIRCLE 124,31,28
+440 PEN 7:CIRCLE 207,31,28
+450 PEN 0:ELLIPSE 67,91,60,26
+460 PEN 0,0:ELLIPSE 67,91,30,12
+470 PEN 2:ELLIPSE 189,91,50,20
+480 GOSUB 900
+500 REM ----- POLYGONS: A FILLED STAR, WITH ITS HOLE; A HEXAGON -----
+510 CLS
+520 PEN 0:N=5:S=144:C=66:GOSUB 800
+530 PEN 2:N=6:S=60:C=186:GOSUB 800
+540 GOSUB 900
+600 REM ----- A WHITE PEN ERASES: A BALL HOPS ACROSS -----
+610 CLS
+620 FOR D=19 TO 229 STEP 30
+630 PEN 0:CIRCLE D,61,14
+640 WAIT 300
+650 PEN 0,0:CIRCLE D,61,14
+660 NEXT D
+670 END
+800 REM N CORNERS, S DEGREES APART, AROUND C,62
+810 A=-90
+820 FOR I=0 TO N-1
+830 X(I)=INT(C-0.5+50*COS(A)):Y(I)=INT(61.5+50*SIN(A))
+840 A=A+S
+850 NEXT I
+860 POLYGON N,X,Y
+870 RETURN
+900 REM WAIT FOR A KEY
+910 IF INKEY$=&quot;&quot; THEN WAIT 20:GOTO 910
+920 RETURN</code></pre>
+<h3>CATCHER</h3>
+<p>A game that shows the graphics and the sound. Stars and rocks fall; <kbd>4</kbd> and <kbd>6</kbd> (or <kbd>&#9650;</kbd> <kbd>&#9660;</kbd>) move the basket. A star caught plays a tone without stopping the game (<code>PLAYWAV "TONES/TONE"+STR$(C)</code>), one higher for each star in a row; a rock costs a life, with sparks drawn by <code>LINE</code> and the error sound (<code>TONE 10</code>). Every 10 stars the game speeds up, with a jingle. Three rocks and it's over; <kbd>ENTER</kbd> plays again, <kbd>R/S</kbd> stops.</p>
+<figure><img class="shot" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPoAAAB6AQAAAAC+J3NIAAAPxUlEQVR4AQG6D0XwAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP///f/////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////3///AAP/////////////////////////////////////////AAP/////9///////////////////////////////////AAP//////////////////3/v////////////////////AAP////////////////9/3/v/f//////////////////AAP////////////////9/3/v/f//////////////////AAP////////////////+/7/v+///////////////////AAP///////////////f+/7/v+/9/////////////////AAP///////////////v/f7/f9/7/////////////////AAP///////////////3/f7/f9/7//////////////f//AAP///////////////3/v7/f9/3/////////////////AAP///////////////7/v7/f7/v/v///////////////AAP/////////////7/9/39/f7/f/f///////////////AAP/////////////9/+/39/f3/f+////////////////AAP//9//////////+f/f79/f3+/9////////////////AAP//////////////v/f79/f39/z////////////////AAP//////////////3/v99/fv7/v////////////////AAP////////////v/7/39+/fv7/f/7//////////////AAP////////////z/8/79++/f3+//n//////////////AAP////////////8//f9+++/fv9/+f//////////////AAP/////////////P/v9+++/ff7/5///////////////AAP/////////////z/3+/e++/f3/3////////7//////AAP/////////////8/5/fe+++/P/P///////////////AAP//////////////f+/vve99+/8//z/////////////AAP///////////n//n/fvve999/z/+P/////////////AAP///////////4//5/v33e777/v/5//////////////AAP////////////H/+fz73e733+f/H//////////////AAP////////////4//n997d7vv5/4//////3////////AAP/////////////H/5++7t3vfn/n///////////////AAP/////////////4/+/e7t3e/f8f///////////////AAP//////////////H/Pvdtu58/j//+P////////////AAP//////////4///4/zzttt3z+f//B/////////////AAP///////////A///H892ttvPx//w//////////////AAP//////////wAAAAAAAAAAAAAAAAAD////////////AAP/////////////////////////////////////////AAP///////////////////////////////////////5/AAP/////////////////////////////////////////AAP///////////8GB44H/weOBwZyAgf/////////////AAP///////////4CBwYD/gMGBgJyAgP/////////////AAP///////////5/niJz/jIjnjJyfnP/////////////AAP///////////5/nnJz/n5znn5yfnP/////////////AAP///////////4HnnID/n5znn4CDgP9////////////AAP///////////8DngIH/n4Dnn4CDgf/////////////AAP////////////zngJP/n4Dnn5yfk//////////////AAP////////////znnJn/jJznjJyfmf/////////////AAP///////////4DnnJj/gJzngJyAmP/////////////AAP///////////8HnnJz/wZznwZyAnP/////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP//////////wAAAAAAAAAAAAAAAAAD////////////AAP////////////8H/8/O7a258/8f///////////////AAP////////////D//j89223e/P/h///////////////AAP///////////w//8f7723bvPz/+H//////////////AAP//////////+P//z/n3u3d338//4//////////////AAP/////////////+P+fvd3d77/P//D/////////////AAP/////////////5/9/fd3e98/x//8/////////////AAP/////////////H/z8+93u+/f+f///////////////AAP////////////8//P7973vffn/n///////////////AAP////////////j/+/3773vfv7/5///////////////AAP///////////+f/5/v773vv38/+f//////////////AAP///////////5//3/f3333v7/f/n//////////////AAP//////////////P+/v33339/v/5//////////////AAP/////7///////8/9/v3333+/z/+f/////////////AAP/////////////7/7/fv337/f9////////////////AAP/////////////n/3+/v377/v+f///////////////AAP//3////v////+f/v+/v379/v/v///////////////AAP////////////9/+f9/f37+/3/3///////////////AAP//////////////9/7/f37+/7/5///////////////AAP//////////////7/7/f39/f9/+///////////////AAP//////////////3/3+/v9/f+/////////////////AAP//////////////v/v+/v9/v/f////////////////AAP//////////////f/v9/v9/v/v////////////////AAP////////////////f9/v+/3/3////////////////AAP///////////////+/9/v+/3//////////////////AAP///////////////+/7/v+/7//////////////////AAP///////////////9/7/v+/7//////////////////AAP/////////////////7/v/f9//////////////////AAP/////////////////3/v/f///////////////////AAP/////////////////3/v/f///////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP////+AvIGAgf//gZ/jmf//gf7B///BnIGB///////AAP////+AnIGAgP//gJ/Bmf//gPyA//+AnIGB///////AAP////+fjOefnPP/nJ+Imf//nPmf8/+cnOfn///////AAP////+fhOefnPP/nJ+cmf//nPuf8/+cnOfn///////AAP////+DkOeDgP//gJ+cw///gPOB//+cnOfn///////AAP////+DmOeDgf//gZ+Aw///gefA//+UnOfn///////AAP////+fnOefk/P/n5+A5///k+/88/+QnOfn///////AAP////+fnOefmfP/n5+c5///mc/88/+YnOfn///////AAP////+AnOeAmP//n4Cc5///mJ+A//+AgIHn///////AAP////+AnOeAnP//n4Cc5///nL/B///BwYHn///////AAP/////////////////////////////////////////AAP/////////////////////////////////////////A4u5BzhNGLQgAAAAASUVORK5CYII=" alt="The title: a burst of lines around STAR CATCHER"><figcaption>CATCHER's title.</figcaption></figure>
+<figure><img class="shot" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPoAAAB6AQAAAAC+J3NIAAAPxUlEQVR4AQG6D0XwAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAMHBwYGA/+f///////+BgMGB/8H////////////////AAICAgICA/8f///////+AgICB/4D//////////8AwDAPAAJ+MnJyf/8f///////+cn5/n/5z//////////8AwDAPAAJ+fnJyf/+f///////+cn5/n/5j//////////8AwDAPAAIGfnICD/+f///////+Bg4Hn/5D//////////8AwDAPAAMCfnIGD/+f///////+Bg8Dn/4T//////////8AwDAPAAPyfnJOf/+f///////+cn/zn/4z//////////8AwDAPAAPyMnJmf/+f///////+cn/zn/5z//////////8AwDAPAAICAgJiA/4H///////+AgIDn/4D//////////8AwDAPAAMHBwZyA/4H///////+BgMHn/8H////////////////AAP/////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP//+///////////////+//////////////////////AAP///////7v////////////////////////////////AAP////////////////////////////////+////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/f///////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP////v////////////////////////////////////AAP/////////////////////////////////////////AAP/////////9///////////////v///////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP//7//////////////////////////////////////AAP////////////////////////9////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////9///////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP///v/////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP////////////+////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP+//////////////3/////////////////////////AAP///////////////3/////////////////////////AAP///////////////3/////////////////////////AAP//////////////+A/////////////////////////AAP///////////////3/////////////////////////AAP///////////////3//////////////////////f//AAP///////////////3/////////////////////////AAP/////////////////////////////////////////AAP/////9///////////////////////////////////AAP/////////////////////////////////////////AAP/////////////v7//////////////////////////AAP//7///////////7/////////////////////9////AAP//////////////7//////////////////////////AAP//////////////Af/////////////////////////AAP//////////////7//////////////////////////AAP//////////////7/////////f////////////////AAP//////////////7//////////////////////////AAP///////////////////////////////////+/////AAP//////+//////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP////////////////////////7////////////////AAP/////////////////////////////////////////AAP/v///////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP//////////////////////7//////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP////////////9/f//////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP///////////7/////////////////////////////AAP7//////////////////////////////3/////////AAP/////////////////////////////////////////AAP/////////////////3//////////////////////3AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP/////////////////////////////////////////AAP//////////////////v///f//////////////////AAP//////////////////v///f//////////////////AAP//////////////////3//+///////////////////AAP//////////////////wAAA///////////////////AAP//////////////////7//9///////////////////AAP//////////////////7//9///////////////////AAP//////////////////9//7///////////////////AAP//////////////////8AAD///////////////////AAP/////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw0CEz/snEbwAAAAASUVORK5CYII=" alt="The game: the score, falling stars and rocks, the basket"><figcaption>CATCHER, playing.</figcaption></figure>
+<pre><code>10 REM STAR CATCHER: CATCH THE STARS, DODGE THE ROCKS
+20 REM 4 AND 6 (OR THE ARROWS) MOVE THE BASKET, R/S QUITS
+30 REM GRAPHICS: LINE BOX PSET AT. SOUND: TONE AND PLAYWAV
+40 DIM X(3),Y(3),T(3)
+50 H=0
+100 REM ----- TITLE: A BURST OF LINES, A FANFARE -----
+110 CLS:RAD
+120 FOR A=0 TO 6.2 STEP 0.2
+130 LINE 121,66,121+55*COS(A),66+38*SIN(A)
+140 NEXT A
+150 BOX 66,58,110,17,0
+160 LINE 66,58,175,58:LINE 66,74,175,74
+170 AT 9,4:PRINT &quot;STAR CATCHER&quot;;
+180 AT 4,8:PRINT &quot;ENTER: PLAY  R/S: QUIT&quot;;
+190 TONE 3:TONE 5:TONE 7:TONE 9
+200 REM TWINKLE IN THE CORNERS UNTIL ENTER
+210 N=RND(60)-1:IF RND(2)=1 THEN N=N+190
+220 PSET N,RND(80)+13,RND(2)-1
+230 K$=INKEY$:IF K$&lt;&gt;CHR$(13) THEN WAIT 20:GOTO 210
+300 REM ----- A NEW GAME -----
+310 CLS:S=0:L=3:V=2:C=0:P=113:G=10
+320 FOR I=0 TO 3:T(I)=0:NEXT I
+330 FOR I=1 TO 40:PSET RND(250)-1,RND(80)+26:NEXT I
+340 LINE 0,121,249,121
+350 GOSUB 900:GOSUB 800
+400 REM ----- EACH FRAME: THE KEYS, THEN EVERYTHING FALLS -----
+410 K$=INKEY$:D=0
+420 IF K$=&quot;4&quot; OR K$=CHR$(30) THEN D=-12
+430 IF K$=&quot;6&quot; OR K$=CHR$(31) THEN D=12
+440 IF D THEN BOX P,112,24,8,0:P=P+D:IF P&lt;0 THEN P=0
+450 IF P&gt;226 THEN P=226
+460 IF D THEN GOSUB 800
+500 FOR I=0 TO 3
+510 IF T(I)=0 THEN GOSUB 600:GOTO 590
+520 BOX X(I)-3,Y(I)-3,7,7,0
+530 Y(I)=Y(I)+V
+540 IF Y(I)&gt;=110 THEN GOSUB 700:GOTO 590
+550 IF T(I)=1 THEN LINE X(I)-3,Y(I),X(I)+3,Y(I):LINE X(I),Y(I)-3,X(I),Y(I)+3
+560 IF T(I)=2 THEN BOX X(I)-3,Y(I)-3,7,7,1:PSET X(I)-1,Y(I)-1,0
+590 NEXT I
+595 IF L=0 THEN 1000
+598 WAIT 20
+599 GOTO 410
+600 REM ----- MAYBE A NEW STAR OR ROCK IN SLOT I -----
+610 IF RND(12)&gt;1 THEN RETURN
+620 X(I)=RND(234)+7:Y(I)=29:T(I)=1
+630 IF RND(10)&lt;=2+INT(S/15) THEN T(I)=2
+640 RETURN
+700 REM ----- SLOT I REACHED THE BASKET&#x27;S LINE -----
+710 Z=T(I):T(I)=0
+720 IF X(I)&lt;P-2 OR X(I)&gt;P+25 THEN 770
+730 IF Z=2 THEN 780
+740 S=S+1:C=C+1:IF C&gt;9 THEN C=9
+750 PLAYWAV &quot;TONES/TONE&quot;+STR$(C)
+760 IF S=G THEN GOSUB 850
+765 GOSUB 900:GOSUB 800:RETURN
+770 IF Z=1 THEN C=0
+775 GOSUB 800:RETURN
+780 L=L-1:C=0:GOSUB 950:GOSUB 900:GOSUB 800:RETURN
+800 REM ----- THE BASKET -----
+810 BOX P,112,24,8,0
+820 LINE P,112,P+3,119:LINE P+23,112,P+20,119:LINE P+3,119,P+20,119
+830 LINE P+1,115,P+22,115
+840 RETURN
+850 REM ----- NEXT LEVEL: FASTER, AND A JINGLE -----
+860 V=V+1:G=G+10
+870 AT 11,4:PRINT &quot;LEVEL &quot;;V-1;
+880 TONE 5:TONE 7:TONE 9
+890 BOX 0,61,250,12,0:RETURN
+900 REM ----- SCORE, BEST, LIVES -----
+910 AT 0,0:PRINT &quot;SCORE &quot;;S;&quot;  &quot;;
+920 AT 13,0:PRINT &quot;BEST &quot;;H;&quot;  &quot;;
+930 FOR J=0 TO 2:BOX 218+J*10,15,8,8,1:IF J&gt;=L THEN BOX 219+J*10,16,6,6,0
+940 NEXT J
+945 LINE 0,25,249,25:RETURN
+950 REM ----- A ROCK HIT: SPARKS AND THE ERROR SOUND -----
+960 FOR A=0 TO 3.2 STEP 0.4
+970 LINE X(I),111,X(I)+12*COS(A),111-12*SIN(A)
+980 NEXT A
+985 TONE 10
+990 BOX X(I)-13,98,27,14,0:RETURN
+1000 REM ----- GAME OVER: A FALLING SCALE -----
+1010 IF S&gt;H THEN H=S
+1020 BOX 50,47,150,52,0
+1030 LINE 50,47,199,47:LINE 199,47,199,98:LINE 199,98,50,98:LINE 50,98,50,47
+1040 AT 11,3:PRINT &quot;GAME OVER&quot;;
+1050 AT 11,5:PRINT &quot;SCORE &quot;;S;
+1060 FOR N=9 TO 0 STEP -3:TONE N:NEXT N
+1070 IF INKEY$&lt;&gt;&quot;&quot; THEN 1070
+1080 AT 10,6:PRINT &quot;ENTER: AGAIN&quot;;
+1090 K$=INKEY$:IF K$&lt;&gt;CHR$(13) THEN WAIT 20:GOTO 1090
+1100 GOTO 300</code></pre>
 
 <!-- ============================================================ -->
 <h2 id="limits">12. Limits</h2>
@@ -732,10 +897,10 @@ table.ref td:first-child { white-space: nowrap; }
 <tbody>
 <tr><th>Commands</th><td><code>RUN LIST NEW SAVE LOAD FILES ERASE VER MEM HELP CMDS EXIT</code></td></tr>
 <tr><th>Statements</th><td><code>DIM PRINT ? INPUT LET IF THEN GOTO GOSUB RETURN FOR TO STEP NEXT END STOP REM</code></td></tr>
-<tr><th>The calculator</th><td><code>CLS AT PSET LINE BOX TONE PLAYMIDI STOPMIDI PLAYWAV STOPWAV WAIT DEG RAD DIGITS</code></td></tr>
+<tr><th>The calculator</th><td><code>CLS AT PSET LINE BOX CIRCLE ELLIPSE POLYGON PEN TONE PLAYMIDI STOPMIDI PLAYWAV STOPWAV WAIT DEG RAD DIGITS</code></td></tr>
 <tr><th>Functions</th><td><code>SIN COS TAN ASN ACS ATN SQR EXP LOG LOG10 ABS SGN INT RND PI KEY MIDI SIZE LEN ASC VAL INSTR LEFT$ RIGHT$ MID$ CHR$ STR$ INKEY$</code></td></tr>
 <tr><th>Operators</th><td><code>^ * / MOD + - = &lt;&gt; &lt; &gt; &lt;= &gt;= NOT AND OR</code></td></tr>
-<tr><th>Keys</th><td><kbd>SHIFT</kbd> <kbd>ENTER</kbd> ALPHA/NUM &middot; <kbd>SHIFT</kbd> other mode once &middot; <kbd>&#9650;</kbd> <kbd>&#9660;</kbd> program editor (no program: history), or move in a line &middot; <kbd>SHIFT</kbd> <kbd>&#9650;</kbd> history &middot; <kbd>SHIFT</kbd> <kbd>&#9660;</kbd> keywords &middot; <kbd>&larr;</kbd> delete &middot; <kbd>R/S</kbd> stop &middot; <kbd>SHIFT</kbd> <kbd>R/S</kbd> RUN &middot; <kbd>ON</kbd> stop, or leave (asks)</td></tr>
+<tr><th>Keys</th><td><kbd>SHIFT</kbd> <kbd>ENTER</kbd> ALPHA/NUM &middot; <kbd>SHIFT</kbd> other mode once &middot; <kbd>&#9650;</kbd> <kbd>&#9660;</kbd> program editor (no program: history), or move in a line &middot; <kbd>&#9660;</kbd> at the end complete &middot; <kbd>SHIFT</kbd> <kbd>&#9650;</kbd> history &middot; <kbd>SHIFT</kbd> <kbd>&#9660;</kbd> keywords &middot; <kbd>&larr;</kbd> delete &middot; <kbd>R/S</kbd> stop &middot; <kbd>SHIFT</kbd> <kbd>R/S</kbd> RUN &middot; <kbd>ON</kbd> stop, or leave (asks)</td></tr>
 </tbody>
 </table></div>
 

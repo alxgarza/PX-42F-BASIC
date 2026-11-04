@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "px_app.h"
+
 /* What the interpreter (basic.c) needs from the machine it runs on: the
  * console, the keys, the screen, the speaker, the files. main.c and
  * console.c give it the PX-42F's; tests/test_basic.c a stand-in, so the
@@ -35,8 +37,11 @@ void bio_help(void);
 void bio_cls(void);
 void bio_at(int col, int row);
 void bio_pset(int x, int y, int black);
-void bio_line(int x0, int y0, int x1, int y1, int black);
-void bio_box(int x, int y, int w, int h, int black);
+/* t is the thickness: 0 filled, 1 one pixel, n pixels. */
+void bio_line(int x0, int y0, int x1, int y1, int t, int black);
+void bio_box(int x, int y, int w, int h, int t, int black);
+void bio_ellipse(int x, int y, int rx, int ry, int t, int black);
+void bio_polygon(const px_point_t *points, int n, int t, int black);
 void bio_tone(int tone);
 /* Starts the song /MIDI/<name>.mid and returns at once: 0, or BIO_MIDI_*. */
 #define BIO_MIDI_MISSING  (-1) /* no such song, or not a file the synth plays */

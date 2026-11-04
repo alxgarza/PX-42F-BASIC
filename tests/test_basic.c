@@ -98,12 +98,26 @@ void bio_pset(int x, int y, int black) {
     log_machine("PSET %d %d %d ", x, y, black, 0, 0);
 }
 
-void bio_line(int x0, int y0, int x1, int y1, int black) {
-    log_machine("LINE %d %d %d %d %d ", x0, y0, x1, y1, black);
+void bio_line(int x0, int y0, int x1, int y1, int t, int black) {
+    log_machine("LINE %d %d %d %d ", x0, y0, x1, y1, 0);
+    log_machine("t%d c%d ", t, black, 0, 0, 0);
 }
 
-void bio_box(int x, int y, int w, int h, int black) {
-    log_machine("BOX %d %d %d %d %d ", x, y, w, h, black);
+void bio_box(int x, int y, int w, int h, int t, int black) {
+    log_machine("BOX %d %d %d %d ", x, y, w, h, 0);
+    log_machine("t%d c%d ", t, black, 0, 0, 0);
+}
+
+void bio_ellipse(int x, int y, int rx, int ry, int t, int black) {
+    log_machine("ELLIPSE %d %d %d %d ", x, y, rx, ry, 0);
+    log_machine("t%d c%d ", t, black, 0, 0, 0);
+}
+
+void bio_polygon(const px_point_t *points, int n, int t, int black) {
+    log_machine("POLYGON ", 0, 0, 0, 0, 0);
+    for (int i = 0; i < n; i++)
+        log_machine("%d,%d ", points[i].x, points[i].y, 0, 0, 0);
+    log_machine("t%d c%d ", t, black, 0, 0, 0);
 }
 
 void bio_tone(int tone) {
@@ -369,8 +383,45 @@ static void test_files(void) {
 
 static void test_machine(void) {
     basic_new();
+    TYPED("BOX 1,2,3,4:BOX 1,2,3,4,0:BOX 1,2,3,4,1,2");
+    CHECK(strcmp(machine, "BOX 1 2 3 4 t0 c1 BOX 1 2 3 4 t0 c0 BOX 1 2 3 4 t2 c1 ") == 0, "BOX: filled unless t says: %s", machine);
+    TYPED("LINE 1,2,3,4:LINE 1,2,3,4,1,5");
+    CHECK(strcmp(machine, "LINE 1 2 3 4 t1 c1 LINE 1 2 3 4 t5 c1 ") == 0, "LINE: one pixel unless t says: %s", machine);
+    TYPED("CIRCLE 9,8,7:CIRCLE 9,8,7,0:CIRCLE 9,8,7,1,1");
+    CHECK(strcmp(machine, "ELLIPSE 9 8 7 7 t0 c1 ELLIPSE 9 8 7 7 t0 c0 ELLIPSE 9 8 7 7 t1 c1 ") == 0, "CIRCLE: %s", machine);
+    TYPED("ELLIPSE 9,8,7,6:ELLIPSE 9,8,7,6,1,3");
+    CHECK(strcmp(machine, "ELLIPSE 9 8 7 6 t0 c1 ELLIPSE 9 8 7 6 t3 c1 ") == 0, "ELLIPSE: %s", machine);
+    TYPED("NEW", "DIM X(2),Y(2):X(0)=1:Y(0)=2:X(1)=3:Y(1)=4:X(2)=5:Y(2)=6", "POLYGON 3,X,Y:POLYGON 2,X,Y,0,2");
+    CHECK(strcmp(machine, "POLYGON 1,2 3,4 5,6 t0 c1 POLYGON 1,2 3,4 t2 c0 ") == 0, "POLYGON: %s", machine);
+    expect(TYPED("NEW", "DIM X(2),Y(2):POLYGON 4,X,Y"), "HOW?\n", "POLYGON: more corners than the list has");
+    expect(TYPED("NEW", "DIM X(2):POLYGON 2,X,Y"), "HOW?\n", "POLYGON: a list not dimensioned");
+    expect(TYPED("NEW", "DIM X(2,2),Y(2):POLYGON 2,X,Y"), "HOW?\n", "POLYGON: a table, not a list");
+    expect(TYPED("NEW", "DIM X(99),Y(99):POLYGON 65,X,Y"), "HOW?\n", "POLYGON: more than 64 corners");
+    expect(TYPED("NEW", "DIM X(2),Y(2):POLYGON 0,X,Y"), "HOW?\n", "POLYGON: no corners");
+    expect(TYPED("NEW", "DIM X(2),Y(2):POLYGON 2,X"), "WHAT?\n", "POLYGON: one list");
+    expect(TYPED("BOX 1,2,3,4,1,-1"), "HOW?\n", "BOX: a negative thickness");
+    expect(TYPED("LINE 1,2,3,4,1,-1"), "HOW?\n", "LINE: a negative thickness");
+    expect(TYPED("CIRCLE 1,2,3,1,-1"), "HOW?\n", "CIRCLE: a negative thickness");
+    expect(TYPED("ELLIPSE 1,2,3,4,1,-1"), "HOW?\n", "ELLIPSE: a negative thickness");
+    expect(TYPED("CIRCLE 1,2"), "WHAT?\n", "CIRCLE: no radius");
+    TYPED("NEW", "PEN 2:BOX 1,1,5,5:CIRCLE 9,8,7:ELLIPSE 9,8,7,6:LINE 0,0,9,9:PSET 1,2");
+    CHECK(strcmp(machine, "BOX 1 1 5 5 t2 c1 ELLIPSE 9 8 7 7 t2 c1 ELLIPSE 9 8 7 6 t2 c1 LINE 0 0 9 9 t2 c1 PSET 1 2 1 ") == 0,
+          "PEN t: %s", machine);
+    TYPED("NEW", "PEN 0,0:BOX 1,1,5,5:LINE 0,0,9,9:PSET 1,2");
+    CHECK(strcmp(machine, "BOX 1 1 5 5 t0 c0 LINE 0 0 9 9 t0 c0 PSET 1 2 0 ") == 0, "PEN t,c: %s", machine);
+    TYPED("NEW", "PEN 3,0:BOX 1,1,5,5,1:BOX 1,1,5,5,1,1:PSET 1,2,1");
+    CHECK(strcmp(machine, "BOX 1 1 5 5 t3 c1 BOX 1 1 5 5 t1 c1 PSET 1 2 1 ") == 0, "what a shape gives beats the pen: %s", machine);
+    TYPED("NEW", "DIM X(1),Y(1):PEN 4,0:POLYGON 2,X,Y:POLYGON 2,X,Y,1:POLYGON 2,X,Y,1,1");
+    CHECK(strcmp(machine, "POLYGON 0,0 0,0 t4 c0 POLYGON 0,0 0,0 t4 c1 POLYGON 0,0 0,0 t1 c1 ") == 0, "POLYGON and PEN: %s", machine);
+    TYPED("PEN 3,0", "NEW", "BOX 1,1,5,5:LINE 0,0,9,9");
+    CHECK(strcmp(machine, "BOX 1 1 5 5 t0 c1 LINE 0 0 9 9 t1 c1 ") == 0, "NEW forgets the pen: %s", machine);
+    TYPED("NEW", "10 BOX 1,1,5,5", "PEN 3,0", "RUN");
+    CHECK(strcmp(machine, "BOX 1 1 5 5 t0 c1 ") == 0, "RUN forgets the pen: %s", machine);
+    expect(TYPED("NEW", "PEN -1"), "HOW?\n", "PEN: a negative thickness");
+    expect(TYPED("NEW", "PEN"), "WHAT?\n", "PEN: nothing");
+    TYPED("NEW");
     TYPED("CLS:PSET 1,2:LINE 0,0,9,9,0:BOX 1,1,5,5:TONE 3:AT 2,3:WAIT 100");
-    CHECK(strcmp(machine, "CLS PSET 1 2 1 LINE 0 0 9 9 0 BOX 1 1 5 5 1 TONE 3 AT 2 3 WAIT 100 ") == 0, "graphics: %s",
+    CHECK(strcmp(machine, "CLS PSET 1 2 1 LINE 0 0 9 9 t1 c0 BOX 1 1 5 5 t0 c1 TONE 3 AT 2 3 WAIT 100 ") == 0, "graphics: %s",
           machine);
     expect(TYPED("TONE 11"), "HOW?\n", "TONE 0-10 only");
     expect(TYPED("PLAYMIDI \"Fur Elise\":PRINT MIDI():STOPMIDI:PRINT MIDI()"), "1\n0\n", "PLAYMIDI, MIDI(), STOPMIDI");

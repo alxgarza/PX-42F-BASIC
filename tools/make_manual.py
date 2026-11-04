@@ -235,7 +235,7 @@ KEYS_NUM
 <tbody>
 <tr><td><kbd>SHIFT</kbd> <kbd>ENTER</kbd></td><td>ALPHA, as printed below <kbd>ENTER</kbd>: switches between ALPHA and NUM.</td></tr>
 <tr><td><kbd>SHIFT</kbd></td><td>With any other key, types from the other mode once: <kbd>SHIFT</kbd> <kbd>7</kbd> types 7 in ALPHA, <kbd>SHIFT</kbd> <kbd>&Sigma;+</kbd> types A in NUM.</td></tr>
-<tr><td><kbd>&#9650;</kbd> <kbd>&#9660;</kbd></td><td>On an empty line: open the program editor (<a href="#editing">section 4</a>). With no program, the history instead: <kbd>&#9650;</kbd> the line typed before, again the one before that; <kbd>&#9660;</kbd> back toward the newest. On a line with text, or while editing a line: move the cursor left and right.</td></tr>
+<tr><td><kbd>&#9650;</kbd> <kbd>&#9660;</kbd></td><td>On an empty line: open the program editor (<a href="#editing">section 4</a>). With no program, the history instead: <kbd>&#9650;</kbd> the line typed before, again the one before that; <kbd>&#9660;</kbd> back toward the newest. On a line with text, or while editing a line: move the cursor left and right. <kbd>&#9660;</kbd> at the end of the line completes the keyword being typed, like <kbd>TAB</kbd> on the terminal: <code>PR</code> becomes <code>PRINT&nbsp;</code>.</td></tr>
 <tr><td><kbd>SHIFT</kbd> <kbd>&#9650;</kbd></td><td>The history: the last line typed at the prompt, in place of the one being typed, to run it again. Again: the one before, back through the last 8.</td></tr>
 <tr><td><kbd>SHIFT</kbd> <kbd>&#9660;</kbd></td><td>The keyword map (below).</td></tr>
 <tr><td><kbd>&larr;</kbd></td><td>Deletes the last character. <kbd>SHIFT</kbd> <kbd>&larr;</kbd> deletes the whole line.</td></tr>
@@ -270,6 +270,7 @@ KEYWORD_PAGES_TABLE
   <li>Everything the screen shows also goes to the terminal, so a long listing can be read there.</li>
   <li><kbd>Ctrl-C</kbd> stops a running program, as <kbd>R/S</kbd> does; at the prompt it clears the line.</li>
   <li>The arrow keys work as you'd expect: <kbd>&larr;</kbd> <kbd>&rarr;</kbd> move in the line, <kbd>Home</kbd> and <kbd>End</kbd> go to its ends, <kbd>Delete</kbd> deletes under the cursor, <kbd>&uarr;</kbd> <kbd>&darr;</kbd> step through the history. <kbd>Ctrl-A</kbd> <kbd>Ctrl-E</kbd> <kbd>Ctrl-B</kbd> <kbd>Ctrl-F</kbd> <kbd>Ctrl-P</kbd> <kbd>Ctrl-N</kbd> and <kbd>Ctrl-U</kbd> do the same, for terminals that don't send the arrows.</li>
+  <li><kbd>TAB</kbd> completes the keyword being typed, as in a Linux shell: <code>PR</code> <kbd>TAB</kbd> gives <code>PRINT&nbsp;</code>, <code>SQ</code> <kbd>TAB</kbd> gives <code>SQR(</code>. When several words fit, it goes as far as they agree (<code>STO</code> becomes <code>STOP</code>); when that adds nothing, it lists them. Not inside quotes. A <kbd>TAB</kbd> inside a pasted program is a space.</li>
   <li>Editing the middle of a line redraws it with ANSI codes (carriage return, clear to the end of the line, cursor back): any ordinary terminal handles them. If CoolTerm shows odd characters or never sends the arrows or Ctrl-C, set it to <em>Raw Mode</em> (Connection &rarr; Options &rarr; Terminal), which sends each key at once.</li>
 </ul>
 
@@ -442,7 +443,7 @@ KEYWORD_PAGES_TABLE
 <tr><td><code>REM</code></td><td>A note: the rest of the line is ignored.</td><td><code>REM DRAW THE AXES</code></td></tr>
 <tr><td><code>DEG</code>, <code>RAD</code></td><td>Angles in degrees, or radians (the default). <code>RUN</code> starts in radians, so a program that wants degrees says <code>DEG</code> itself.</td><td><code>DEG:PRINT SIN(30)</code></td></tr>
 <tr><td><code>DIGITS</code></td><td>Digits PRINT shows, 1 to 34; 12 at first, and again at each <code>RUN</code>.</td><td><code>DIGITS 34</code></td></tr>
-<tr><td><code>CLS</code>, <code>AT</code>, <code>PSET</code>, <code>LINE</code>, <code>BOX</code>, <code>TONE</code>, <code>PLAYMIDI</code>, <code>STOPMIDI</code>, <code>PLAYWAV</code>, <code>STOPWAV</code>, <code>WAIT</code></td><td colspan="2">The screen, sound and time: <a href="#screen">section 8</a>.</td></tr>
+<tr><td><code>CLS</code>, <code>AT</code>, <code>PSET</code>, <code>LINE</code>, <code>BOX</code>, <code>CIRCLE</code>, <code>ELLIPSE</code>, <code>POLYGON</code>, <code>PEN</code>, <code>TONE</code>, <code>PLAYMIDI</code>, <code>STOPMIDI</code>, <code>PLAYWAV</code>, <code>STOPWAV</code>, <code>WAIT</code></td><td colspan="2">The screen, sound and time: <a href="#screen">section 8</a>.</td></tr>
 <tr><td><code>SAVE</code>, <code>LOAD</code>, <code>FILES</code>, <code>ERASE</code></td><td colspan="2">Files: <a href="#files">section 9</a>.</td></tr>
 <tr><td><code>VER</code></td><td>Shows the PX-BASIC version.</td><td><code>VER</code></td></tr>
 <tr><td><code>MEM</code></td><td>How much is left of the program space and of the string pool. (<code>SIZE</code> is the program space alone, as a number.)</td><td><code>MEM</code></td></tr>
@@ -467,10 +468,16 @@ KEYWORD_PAGES_TABLE
 <thead><tr><th>Statement</th><th>Draws</th></tr></thead>
 <tbody>
 <tr><td><code>PSET x,y</code> or <code>PSET x,y,c</code></td><td>one pixel</td></tr>
-<tr><td><code>LINE x1,y1,x2,y2</code> (<code>,c</code>)</td><td>a line</td></tr>
-<tr><td><code>BOX x,y,w,h</code> (<code>,c</code>)</td><td>a filled rectangle <code>w</code> wide, <code>h</code> high, from its top-left corner</td></tr>
+<tr><td><code>LINE x1,y1,x2,y2</code> (<code>,c,t</code>)</td><td>a line, <code>t</code> pixels thick (1 if left out)</td></tr>
+<tr><td><code>BOX x,y,w,h</code> (<code>,c,t</code>)</td><td>a rectangle <code>w</code> wide, <code>h</code> high, from its top-left corner</td></tr>
+<tr><td><code>CIRCLE x,y,r</code> (<code>,c,t</code>)</td><td>a circle around <code>x,y</code></td></tr>
+<tr><td><code>ELLIPSE x,y,rx,ry</code> (<code>,c,t</code>)</td><td>the same, <code>rx</code> across and <code>ry</code> up and down from the centre</td></tr>
+<tr><td><code>POLYGON n,X,Y</code> (<code>,c,t</code>)</td><td>the <code>n</code> corners (1 to 64) in the lists <code>X()</code> and <code>Y()</code>, closed for you; where it crosses itself, a filled one has holes. <code>DIM X(2),Y(2)</code> holds 3 corners.</td></tr>
+<tr><td colspan="2"><code>t</code> is the thickness: 0 or left out is filled (a line: 1), 1 one pixel, <code>n</code> <code>n</code> pixels. An outline grows inward, keeping the outer size; a line or a polygon's edge is centred, with round ends. To give <code>t</code>, give <code>c</code> first: <code>CIRCLE 125,61,40,1,1</code>.</td></tr>
+<tr><td><code>PEN t</code> or <code>PEN t,c</code></td><td>draws nothing: the shapes after it use this <code>t</code> and <code>c</code> when they leave those out, and <code>PSET</code> the colour. <code>PEN 2:CIRCLE 125,61,40</code> is an outline 2 pixels thick; <code>PEN 0,0</code> erases, filled. What a shape gives itself still counts. <code>RUN</code> and <code>NEW</code> forget it.</td></tr>
 </tbody>
 </table></div>
+<p>The shapes are the calculator's own, in its firmware, and Plus42 draws with the same ones: <code>PEN</code>, <code>BOX</code>, <code>ELLIPSE</code> and <code>POLYGON</code> there, with <code>DLINE</code> for <code>LINE</code>. Plus42 counts from 1,1, so a position there is one more than here, and its pen starts at 1, an outline. Here, until a <code>PEN</code>, a shape that leaves out <code>t</code> is filled.</p>
 <p>Drawing and text share the screen. While a program runs the status bar isn't redrawn, so the program can use the whole screen; it comes back at the prompt.</p>
 
 <h3>Sound and time</h3>
@@ -548,6 +555,14 @@ KEYS_CODES
 <pre><code>LIST:JUKEBOX</code></pre>
 <h3>SINE</h3>
 <pre><code>LIST:SINE</code></pre>
+<h3>SHAPES</h3>
+<p>Each kind of shape, a page at a time, with <code>PEN</code>; a key goes on. Line 650 draws over the ball with a white pen.</p>
+<pre><code>LIST:SHAPES</code></pre>
+<h3>CATCHER</h3>
+<p>A game that shows the graphics and the sound. Stars and rocks fall; <kbd>4</kbd> and <kbd>6</kbd> (or <kbd>&#9650;</kbd> <kbd>&#9660;</kbd>) move the basket. A star caught plays a tone without stopping the game (<code>PLAYWAV "TONES/TONE"+STR$(C)</code>), one higher for each star in a row; a rock costs a life, with sparks drawn by <code>LINE</code> and the error sound (<code>TONE 10</code>). Every 10 stars the game speeds up, with a jingle. Three rocks and it's over; <kbd>ENTER</kbd> plays again, <kbd>R/S</kbd> stops.</p>
+<figure>IMG:c/catcher-title.png|The title: a burst of lines around STAR CATCHER|<figcaption>CATCHER's title.</figcaption></figure>
+<figure>IMG:c/catcher.png|The game: the score, falling stars and rocks, the basket|<figcaption>CATCHER, playing.</figcaption></figure>
+<pre><code>LIST:CATCHER</code></pre>
 
 <!-- ============================================================ -->
 <h2 id="limits">12. Limits</h2>
@@ -571,10 +586,10 @@ KEYS_CODES
 <tbody>
 <tr><th>Commands</th><td><code>RUN LIST NEW SAVE LOAD FILES ERASE VER MEM HELP CMDS EXIT</code></td></tr>
 <tr><th>Statements</th><td><code>DIM PRINT ? INPUT LET IF THEN GOTO GOSUB RETURN FOR TO STEP NEXT END STOP REM</code></td></tr>
-<tr><th>The calculator</th><td><code>CLS AT PSET LINE BOX TONE PLAYMIDI STOPMIDI PLAYWAV STOPWAV WAIT DEG RAD DIGITS</code></td></tr>
+<tr><th>The calculator</th><td><code>CLS AT PSET LINE BOX CIRCLE ELLIPSE POLYGON PEN TONE PLAYMIDI STOPMIDI PLAYWAV STOPWAV WAIT DEG RAD DIGITS</code></td></tr>
 <tr><th>Functions</th><td><code>SIN COS TAN ASN ACS ATN SQR EXP LOG LOG10 ABS SGN INT RND PI KEY MIDI SIZE LEN ASC VAL INSTR LEFT$ RIGHT$ MID$ CHR$ STR$ INKEY$</code></td></tr>
 <tr><th>Operators</th><td><code>^ * / MOD + - = &lt;&gt; &lt; &gt; &lt;= &gt;= NOT AND OR</code></td></tr>
-<tr><th>Keys</th><td><kbd>SHIFT</kbd> <kbd>ENTER</kbd> ALPHA/NUM &middot; <kbd>SHIFT</kbd> other mode once &middot; <kbd>&#9650;</kbd> <kbd>&#9660;</kbd> program editor (no program: history), or move in a line &middot; <kbd>SHIFT</kbd> <kbd>&#9650;</kbd> history &middot; <kbd>SHIFT</kbd> <kbd>&#9660;</kbd> keywords &middot; <kbd>&larr;</kbd> delete &middot; <kbd>R/S</kbd> stop &middot; <kbd>SHIFT</kbd> <kbd>R/S</kbd> RUN &middot; <kbd>ON</kbd> stop, or leave (asks)</td></tr>
+<tr><th>Keys</th><td><kbd>SHIFT</kbd> <kbd>ENTER</kbd> ALPHA/NUM &middot; <kbd>SHIFT</kbd> other mode once &middot; <kbd>&#9650;</kbd> <kbd>&#9660;</kbd> program editor (no program: history), or move in a line &middot; <kbd>&#9660;</kbd> at the end complete &middot; <kbd>SHIFT</kbd> <kbd>&#9650;</kbd> history &middot; <kbd>SHIFT</kbd> <kbd>&#9660;</kbd> keywords &middot; <kbd>&larr;</kbd> delete &middot; <kbd>R/S</kbd> stop &middot; <kbd>SHIFT</kbd> <kbd>R/S</kbd> RUN &middot; <kbd>ON</kbd> stop, or leave (asks)</td></tr>
 </tbody>
 </table></div>
 

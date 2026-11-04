@@ -106,6 +106,32 @@ run "no program: ▲ ▲ ▼ is the last line" serial:PRINT_5 100 serial:PRINT_6
 run "no program: a changed line, ▲ moves in it" 100 serial:PRINT_5 100 UP R5C0 ENTER R5C3 UP UP R5C2 ENTER 100 QUIT
 has '253'
 
+# Completion: TAB on the terminal, ▼ at the end of the line on the keys
+run "TAB completes a keyword" 100 type:PR 50 $'type:\t' 50 serial:5 100 QUIT
+has '>PRINT 5'
+
+run "TAB makes a lower-case word upper case" 100 type:pr 50 $'type:\t' 50 serial:6 100 QUIT
+has '6'
+
+run "TAB goes as far as the words agree" 100 type:STO 50 $'type:\t' 50 serial: 100 QUIT
+has '>STOP'
+
+run "TAB with nothing to add lists the words" 100 type:ST 50 $'type:\t' 50 100 QUIT
+has 'STEP STOP STR$( STOPMIDI'
+has 'STOPWAV'
+
+run "no TAB completion in quotes" 100 'type:PRINT_"PR' 50 $'type:\t' 50 'serial:"' 100 QUIT
+has 'PR'
+
+run "a TAB in a paste is a space" 100 $'serial:PRINT\t7' 100 QUIT
+has '7'
+
+run "▼ at the end of the line completes" 100 R3C1 R3C3 DOWN R5C0 ENTER R4C2 ENTER 100 QUIT
+has '5'
+
+run "▼ completes in the program editor" 100 serial:10_PRINT_1 100 serial:20_GOT 100 UP ENTER DOWN R5C0 ENTER R5C1 R6C1 ENTER ON serial:LIST 100 QUIT
+has '20 GOTO 10'
+
 # The terminal
 run "up arrow brings the last line back" serial:PRINT_1 100 serial:PRINT_2 100 $'serial:\x1b[A' 100 QUIT
 has '2'

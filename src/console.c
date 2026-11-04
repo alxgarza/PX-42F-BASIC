@@ -118,8 +118,8 @@ static const char *const keyword_pages[KEYWORD_PAGES][7][6] = {
                 {NULL, NULL, NULL, NULL, NULL, NULL},
         },
         {
-                {"BOX ", "CLS", "LINE ", "PSET ", NULL, NULL},
-                {NULL, NULL, NULL, NULL, NULL, NULL},
+                {"BOX ", "CIRCLE ", "CLS", "ELLIPSE ", "LINE ", "PEN "},
+                {"POLYGON ", "PSET ", NULL, NULL, NULL, NULL},
                 {NULL, NULL, NULL, NULL, NULL, NULL},
                 {NULL, NULL, NULL, NULL, NULL, NULL},
                 {NULL, NULL, NULL, NULL, NULL, NULL},
@@ -470,6 +470,92 @@ static void set_text(line_t *l, const char *s) {
     echo_line(l);
 }
 
+/* TAB (or ▼ at the end of the line): the keyword being typed, from the
+ * keyword map's words. One that fits: all of it, with its space or "(".
+ * Several: as far as they agree; when that adds nothing, the list of
+ * them under the line, and the line again. Not in quotes, nor at INPUT. */
+static void complete(line_t *l, bool in_program) {
+    if (in_program && !l->quiet)
+        return;
+    int start = l->pos;
+    while (start > 0) {
+        char c = l->buf[start - 1];
+        if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '$'))
+            break;
+        start--;
+    }
+    while (start < l->pos && l->buf[start] >= '0' && l->buf[start] <= '9')
+        start++; /* a line number before it: not part of the word */
+    int n = l->pos - start, quotes = 0;
+    for (int i = 0; i < start; i++)
+        quotes += l->buf[i] == '"';
+    if (n == 0 || quotes % 2)
+        return;
+
+    enum { WORDS = KEYWORD_PAGES * 7 * 6 };
+    static const char *found[WORDS];
+    int count = 0;
+    for (const char *const *k = &keyword_pages[0][0][0]; k < &keyword_pages[0][0][0] + WORDS; k++) {
+        if (*k == NULL || (int) strlen(*k) < n)
+            continue;
+        bool fits = true;
+        for (int i = 0; i < n && fits; i++) {
+            char c = l->buf[start + i];
+            fits = (*k)[i] == (c >= 'a' && c <= 'z' ? c - 'a' + 'A' : c);
+        }
+        for (int i = 0; i < count && fits; i++)
+            fits = strcmp(found[i], *k) != 0; /* on two pages: once */
+        if (fits)
+            found[count++] = *k;
+    }
+    if (count == 0)
+        return;
+    int agree = (int) strlen(found[0]);
+    for (int i = 1; i < count; i++) {
+        int j = 0;
+        while (j < agree && found[i][j] == found[0][j])
+            j++;
+        agree = j;
+    }
+    char word[16];
+    if (memcmp(l->buf + start, found[0], (size_t) n) != 0) { /* in lower case: the word again, in upper */
+        snprintf(word, sizeof(word), "%.*s", agree, found[0]);
+        while (l->pos > start)
+            delete_before(l);
+        insert_text(l, word);
+        return;
+    }
+    if (agree > n) {
+        snprintf(word, sizeof(word), "%.*s", agree - n, found[0] + n);
+        insert_text(l, word);
+        return;
+    }
+    if (l->quiet)
+        return; /* the program editor's screen: no room for a list */
+    char prompt[sizeof(out_line)];
+    int prompt_len = out_line_len;
+    memcpy(prompt, out_line, (size_t) prompt_len);
+    draw_input(l, false);
+    console_out("\n", 1);
+    for (int i = 0; i < count; i++) {
+        int len = (int) strlen(found[i]);
+        if (found[i][len - 1] == ' ')
+            len--;
+        if (col > 0 && col + 1 + len > CONSOLE_COLS)
+            console_out("\n", 1);
+        else if (col > 0)
+            console_out(" ", 1);
+        console_out(found[i], len);
+    }
+    console_out("\n", 1);
+    console_out(prompt, prompt_len);
+    l->start_col = col;
+    l->start_row = row;
+    l->drawn = 0;
+    l->redraw = true;
+    echo_line(l);
+}
+
 /* SHIFT up (or the terminal's up arrow): the line typed before, in place
  * of this one; again, the one before that. Down: back toward the newest,
  * and then an empty line. At the prompt only. */
@@ -563,6 +649,8 @@ static int key_typed(line_t *l, int k, bool in_program) {
             }
         } else if (!in_program && basic_line_after(0) == 0 && browsing_history(l)) { /* no program: ▲ ▼ the history, as the terminal's arrows */
             recall(l, in_program, up ? +1 : -1);
+        } else if (!up && l->len > 0 && l->pos == l->len) { /* ▼ at the end: as TAB */
+            complete(l, in_program);
         } else if (l->len > 0) { /* a line to edit: the arrows move in it */
             move_to(l, l->pos + (up ? -1 : +1));
         } else if (!in_program) { /* an empty line: the program editor */
@@ -782,8 +870,9 @@ static enum { ESC_NONE, ESC_START, ESC_CSI, ESC_SS3 } esc;
 static int esc_number;
 
 /* What one character from the USB console does: as key_typed(). Ctrl-C
- * stops a running program, and clears the line at the prompt. */
-static int serial_typed(line_t *l, char ch, bool in_program) {
+ * stops a running program, and clears the line at the prompt. typed: the
+ * last character that came in, so a key, not part of a paste. */
+static int serial_typed(line_t *l, char ch, bool in_program, bool typed) {
     if (esc == ESC_START) {
         esc = ch == '[' ? ESC_CSI : ch == 'O' ? ESC_SS3 : ESC_NONE;
         esc_number = 0;
@@ -833,6 +922,12 @@ static int serial_typed(line_t *l, char ch, bool in_program) {
         case 16: recall(l, in_program, +1); break;    /* Ctrl-P */
         case 14: recall(l, in_program, -1); break;    /* Ctrl-N */
         case 21: set_text(l, ""); break;              /* Ctrl-U */
+        case 9:                                       /* TAB; in a paste, a space */
+            if (typed)
+                complete(l, in_program);
+            else
+                insert_text(l, " ");
+            break;
         default:
             if (ch >= ' ' && ch < 127) {
                 char s[2] = {ch, 0};
@@ -887,7 +982,7 @@ int console_input(char *buf, int size, bool in_program) {
                 continue;
             }
             after_cr = in[i] == '\r';
-            done = serial_typed(&l, in[i], in_program);
+            done = serial_typed(&l, in[i], in_program, i == n - 1);
         }
         if (i < n) { /* the next lines (a program pasted): for the next time */
             memcpy(ahead, in + i, (size_t) (n - i));
